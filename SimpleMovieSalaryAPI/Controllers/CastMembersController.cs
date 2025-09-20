@@ -48,7 +48,7 @@ namespace SimpleMovieSalaryAPI.Controllers
             await _context.SaveChangesAsync(); 
             return NoContent(); 
         }
-        [HttpDelete("{id}")] 
+        [HttpDelete("delete/{id}")] 
         public async Task<IActionResult> Delete(int id) { 
             var cast = await _context.CastMembers.FindAsync(id); 
             if (cast == null) return NotFound(); 
