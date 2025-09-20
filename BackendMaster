@@ -1,3 +1,22 @@
+Prompt:
+
+My mentor told me to learn about APIs and I shouldn't be look back again to learn what 
+is API so I should learn to that extent I'm new to WEBAPI and learn till some point as the below code.
+I think I have to learn more based on the real world scenario and I have to understand each and every fundamental
+so can you suggest me some other topics or things I should consider to learn WEBAPI or APIs creation, I don't want to leave 
+any single topic might be authentication middleware or something else I want to learn so can you please tell me first what are 
+the topics present to learn by the 3 years experienced person?
+
+
+"And I do realize there might be some explicit things can be done on AppDbContext something like 
+writing linq queries or some flashApi(I don't know proper word) I want to learn that too and some data 
+annotations and also database first approach or else model first approach or class first approach, Just 
+give me what I have to learn in order to get same experience as 3 or 7 years person"
+
+-----------
+Answer
+-----------
+
 It sounds like you're diving into the core concepts of building APIs with ASP.NET Core and learning how to manage databases, CRUD operations, and other fundamental API concepts. That's great! I'll break down the essential topics and areas of focus that a 3+ year experienced developer would typically be familiar with. Since you're aiming for deep understanding and practical knowledge, I'll make sure to include all relevant topics like database management, authentication, middleware, and other advanced concepts that go beyond basic CRUD operations.
 
 ### **Fundamentals to Advanced Topics for API Development**
