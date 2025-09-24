@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleMovieSalaryAPI.Data;
+using SimpleMovieSalaryAPI.Interfaces;
 using SimpleMovieSalaryAPI.Models;
+using SimpleMovieSalaryAPI.Services;
 // other using statements...
 
 [ApiController]
@@ -10,46 +12,41 @@ using SimpleMovieSalaryAPI.Models;
 [Authorize] // Require authentication for all endpoints by default
 public class CastMembersController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public CastMembersController(AppDbContext context)
+    private readonly ICastNewService _castService;
+    public CastMembersController(ICastNewService castService)
     {
-        _context = context;
+        _castService = castService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CastMember>>> GetAll()
     {
-        return await _context.CastMembers.ToListAsync();
+        var members = await _castService.GetAllAsync();
+        return Ok(members);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CastMember>> Get(int id)
     {
-        var cast = await _context.CastMembers.FindAsync(id);
-        if (cast == null) return NotFound();
-        return Ok(cast);
+        var member = await _castService.GetByIdAsync(id);
+        if (member == null) return NotFound();
+        return Ok(member);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")] // Only Admins can create
     public async Task<ActionResult<CastMember>> Create(CastMember member)
     {
-        _context.CastMembers.Add(member);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = member.Id }, member);
+        var created = await _castService.CreateAsync(member);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")] // Only Admins can update
     public async Task<IActionResult> Update(int id, CastMember updated)
     {
-        if (id != updated.Id) return BadRequest();
-        var existing = await _context.CastMembers.FindAsync(id);
-        if (existing == null) return NotFound();
-        existing.Name = updated.Name;
-        existing.Remuneration = updated.Remuneration;
-        existing.AmountPaid = updated.AmountPaid;
-        await _context.SaveChangesAsync();
+        var updatedSuccess = await _castService.UpdateAsync(id, updated);
+        if (!updatedSuccess) return NotFound();
         return NoContent();
     }
 
@@ -57,10 +54,8 @@ public class CastMembersController : ControllerBase
     [Authorize(Roles = "Admin")] // Only Admins can delete
     public async Task<IActionResult> Delete(int id)
     {
-        var cast = await _context.CastMembers.FindAsync(id);
-        if (cast == null) return NotFound();
-        _context.CastMembers.Remove(cast);
-        await _context.SaveChangesAsync();
+        var deleted = await _castService.DeleteAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

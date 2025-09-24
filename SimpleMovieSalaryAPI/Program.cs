@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SimpleMovieSalaryAPI.Data;
+using SimpleMovieSalaryAPI.Interfaces;
+using SimpleMovieSalaryAPI.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +29,8 @@ builder.Services.AddAuthentication(options =>
         )
     };
 });
+builder.Services.AddScoped<ICastMemberService, CastMemberService>();
+builder.Services.AddScoped<ICastNewService, CastNewService>();
 
 builder.Services.AddAuthorization();
 
@@ -64,7 +68,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
 
 var app = builder.Build();
 
