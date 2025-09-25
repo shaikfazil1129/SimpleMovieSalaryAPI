@@ -31,6 +31,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICastNewService, CastNewService>();
+builder.Services.AddSingleton<ILoggerService, LoggerService>();
 
 builder.Services.AddAuthorization();
 
