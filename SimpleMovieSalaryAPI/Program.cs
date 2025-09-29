@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SimpleMovieSalaryAPI.Data;
 using SimpleMovieSalaryAPI.Interfaces;
+using SimpleMovieSalaryAPI.Middleware;
 using SimpleMovieSalaryAPI.Services;
 using System.Text;
 
@@ -29,6 +30,7 @@ builder.Services.AddAuthentication(options =>
         )
     };
 });
+
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICastNewService, CastNewService>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
@@ -80,6 +82,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseAuthorization();
 

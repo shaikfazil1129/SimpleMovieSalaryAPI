@@ -1,0 +1,60 @@
+﻿@model List<SimpleMovieSalaryWebApp.Models.CastMember>
+@{
+    var role = ViewBag.Role as string;
+}
+
+<h2>Cast Members</h2>
+
+@if (!string.IsNullOrEmpty(role))
+{
+    <p>Logged in as: <strong>@role</strong></p>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Remuneration</th>
+            <th>Amount Paid</th>
+            <th>Remaining</th>
+            <th>Status</th>
+            @if (role == "Admin" || role == "Owner")
+            {
+                <th>Edit</th>
+            }
+            @if (role == "Owner")
+            {
+                <th>Delete</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var member in Model)
+        {
+            <tr>
+                <td>@member.Name</td>
+                <td>@member.Remuneration</td>
+                <td>@member.AmountPaid</td>
+                <td>@member.RemainingAmount</td>
+                <td>@member.Status</td>
+                @if (role == "Admin" || role == "Owner")
+                {
+                    <td>
+                        <a href="#">Edit</a> <!-- We'll implement later -->
+                    </td>
+                }
+                @if (role == "Owner")
+                {
+                    <td>
+                        <a href="#">Delete</a> <!-- We'll implement later -->
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (role == "Admin" || role == "Owner")
+{
+    <a class="btn btn-primary" href="#">Add New Cast Member</a> <!-- Implement later -->
+}

@@ -118,6 +118,12 @@ namespace SimpleMovieSalaryAPI.Controllers
 
         private string GenerateJwtToken(UserModel user)
         {
+  //          "Jwt": {
+  //              "Key": "ThisIsASecretKeyForJwtTokenGeneration",
+  //  "Issuer": "SimpleMovieAPI",
+  //  "Audience": "SimpleMovieAPIUsers",
+  //  "ExpiresInMinutes": 1
+  //},
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
