@@ -41,6 +41,51 @@ public class CastMembersController : ControllerBase
         return Ok(member);
     }
 
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<CastMember>>> SearchByQuery([FromQuery] string filter)
+    {
+        _logger.LogInfo($"Searching cast members using filter: {filter}");
+
+        int? id = null;
+        string? name = null;
+        decimal? remuneration = null;
+
+        try
+        {
+            var parameters = filter.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var param in parameters)
+            {
+                var keyValue = param.Split('=', 2);
+                if (keyValue.Length != 2) continue;
+
+                var key = keyValue[0].Trim().ToLower();
+                var value = keyValue[1].Trim();
+
+                switch (key)
+                {
+                    case "id":
+                        if (int.TryParse(value, out var parsedId)) id = parsedId;
+                        break;
+                    case "name":
+                        name = value;
+                        break;
+                    case "remuneration":
+                        if (decimal.TryParse(value, out var parsedRem)) remuneration = parsedRem;
+                        break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error parsing filter string: {ex.Message}");
+            return BadRequest("Invalid filter format.");
+        }
+
+        var results = await _castService.SearchByParamsAsync(id, name, remuneration);
+        return Ok(results);
+    }
+
+
     [HttpPost]
     [Authorize(Roles = "Admin,Owner")] // Only Admins can create
     public async Task<ActionResult<CastMember>> Create(CastMember member)

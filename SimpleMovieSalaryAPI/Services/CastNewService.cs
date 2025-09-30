@@ -30,6 +30,25 @@ namespace SimpleMovieSalaryAPI.Services
             return castMember;
         }
 
+        public async Task<IEnumerable<CastMember>> SearchByParamsAsync(int? id, string? name, decimal? remuneration)
+        {
+            var query = _context.CastMembers.AsQueryable();
+
+            if (id.HasValue)
+                query = query.Where(c => c.Id == id.Value);
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(c => c.Name.ToLower().Contains(name.ToLower()));
+            }
+
+            if (remuneration.HasValue)
+                query = query.Where(c => c.Remuneration == remuneration.Value);
+
+            return await query.ToListAsync();
+        }
+
+
         public async Task<bool> UpdateAsync(int id, CastMember castMember)
         {
             var existing = await _context.CastMembers.FindAsync(id);
