@@ -1,10 +1,12 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-// 👇 Add this line for session support
-builder.Services.AddSession();
+builder.Services.AddHttpClient(); // For calling your API
 
 var app = builder.Build();
 
@@ -20,13 +22,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 👇 Enable session
-app.UseSession();
+// If using authentication in the future:
+// app.UseAuthentication();
+// app.UseAuthorization();
 
-app.UseAuthorization();
-
+// ✅ Recommended top-level route registration:
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();
