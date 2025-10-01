@@ -43,10 +43,12 @@
         <button id="deleteButton" class="btn btn-danger" disabled>Delete</button>
     }
 
-    @if (role == "Admin" || role == "Owner" || role == "User")
-    {
-        <button id="exportButton" class="btn btn-info">Export to Excel</button>
-    }
+    <form asp-controller="Home" asp-action="DownloadExcel" method="post">
+        <button type="submit" class="btn btn-success">
+            Download Excel
+        </button>
+    </form>
+
 
 </div>
 
@@ -56,6 +58,7 @@
     <table class="table table-striped table-bordered mt-4">
         <thead>
             <tr>
+                <th></th>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Remuneration</th>
@@ -132,40 +135,6 @@ else
             updateButtonStates(); // initialize state
 
             // Excel export button logic
-            const exportBtn = document.getElementById('exportButton');
-            if (exportBtn) {
-                exportBtn.addEventListener('click', function () {
-                    const token = getCookie("token"); // function to get token from cookies
-
-                    fetch('http://localhost:5096/api/castmembers/export', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + token
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok.');
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'CastMembers.xlsx';
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
-                        window.URL.revokeObjectURL(url);
-                    })
-                    .catch(err => alert('Error downloading Excel: ' + err));
-                });
-            }
-
-            function getCookie(name) {
-                const value = "; " + document.cookie;
-                const parts = value.split("; " + name + "=");
-                if (parts.length === 2) return parts.pop().split(";").shift();
-            }
         });
     </script>
 }

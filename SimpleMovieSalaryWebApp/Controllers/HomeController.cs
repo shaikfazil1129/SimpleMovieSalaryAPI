@@ -234,6 +234,29 @@ namespace SimpleMovieSalaryWebApp.Controllers
             return Ok();
         }
 
+        public async Task<IActionResult> DownloadExcel()
+        {
+            //using var client = new HttpClient();
+            //client.BaseAddress = new Uri("http://localhost:5096/api/castmembers/export");
+
+            // Add JWT token if needed
+            var token = Request.Cookies["token"];
+            //if (!string.IsNullOrEmpty(token))
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.GetAsync("http://localhost:5096/api/castmembers/export");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsByteArrayAsync();
+                return File(content,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "CastMembers.xlsx");
+            }
+
+            TempData["Error"] = "Error downloading Excel file.";
+            return RedirectToAction("Index");
+        }
+
 
         private void SetRoleInViewBag()
         {

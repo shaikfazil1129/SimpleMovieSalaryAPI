@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 using SimpleMovieSalaryAPI.Data;
 using SimpleMovieSalaryAPI.Interfaces;
 using SimpleMovieSalaryAPI.Models;
@@ -127,9 +127,36 @@ public class CastMembersController : ControllerBase
     [HttpGet("export")]
     public async Task<IActionResult> ExportToExcel()
     {
-        var fileContents = await _castService.ExportToExcelAsync();
+        var castMembers = await _castService.GetAllAsync();
 
-        return File(fileContents,
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("CastMembers");
+
+        // Add headers
+        worksheet.Cell(1, 1).Value = "ID";
+        worksheet.Cell(1, 2).Value = "Name";
+        worksheet.Cell(1, 3).Value = "Remuneration";
+        worksheet.Cell(1, 4).Value = "Amount Paid";
+        worksheet.Cell(1, 5).Value = "Remaining Amount";
+        worksheet.Cell(1, 6).Value = "Status";
+
+        int row = 2;
+        foreach (var member in castMembers)
+        {
+            worksheet.Cell(row, 1).Value = member.Id;
+            worksheet.Cell(row, 2).Value = member.Name;
+            worksheet.Cell(row, 3).Value = member.Remuneration;
+            worksheet.Cell(row, 4).Value = member.AmountPaid;
+            worksheet.Cell(row, 5).Value = member.RemainingAmount;
+            worksheet.Cell(row, 6).Value = member.Status;
+            row++;
+        }
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return File(stream.ToArray(),
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "CastMembers.xlsx");
     }

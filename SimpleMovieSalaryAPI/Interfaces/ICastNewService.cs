@@ -10,7 +10,5 @@ namespace SimpleMovieSalaryAPI.Interfaces
         Task<CastMember> CreateAsync(CastMember castMember);
         Task<bool> UpdateAsync(int id, CastMember castMember);
         Task<bool> DeleteAsync(int id);
-        Task<byte[]> ExportToExcelAsync();
-
     }
 }
