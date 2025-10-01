@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home";
     var role = ViewBag.Role as string ?? "";
 }
-<p>User Role: <strong>@role</strong></p>
+<p>User Role: <strong>@ViewBag.Role</strong></p>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Cast Members</h2>
     <form method="post" asp-controller="Auth" asp-action="Logout">
@@ -27,7 +27,7 @@
     @* Create: Admin, Owner *@
     @if (role == "Admin" || role == "Owner")
     {
-        <button class="btn btn-success">Create</button>
+        <a asp-controller="Home" asp-action="Create" class="btn btn-success">Create</a>
     }
 
     @* Update: Admin, Owner *@

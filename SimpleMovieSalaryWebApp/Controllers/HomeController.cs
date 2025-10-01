@@ -72,7 +72,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MyWebApp.Controllers
+namespace SimpleMovieSalaryWebApp.Controllers
 {
     public class HomeController : Controller
     {
@@ -129,6 +129,43 @@ namespace MyWebApp.Controllers
 
             return View("Index", new List<CastMemberViewModel> { singleItem });
         }
+
+        [AuthGuard]
+        [HttpGet]
+        public IActionResult Create()
+        {
+            SetRoleInViewBag();
+            return View();
+        }
+
+        [AuthGuard]
+        [HttpPost]
+        public async Task<IActionResult> Create(CastMemberViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                SetRoleInViewBag();
+                return View(model);
+            }
+
+            var token = Request.Cookies["token"];
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var jsonContent = new StringContent(JsonSerializer.Serialize(model), System.Text.Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://localhost:5096/api/castmembers", jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error creating cast member.");
+                SetRoleInViewBag();
+                return View(model);
+            }
+        }
+
 
         private void SetRoleInViewBag()
         {

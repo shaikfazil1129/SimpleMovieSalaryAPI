@@ -26,7 +26,6 @@ namespace SimpleMovieSalaryWebApp.Controllers
                 // Already logged in, redirect to Home
                 return RedirectToAction("Index", "Home");
             }
-
             return View();
         }
 
@@ -57,7 +56,6 @@ namespace SimpleMovieSalaryWebApp.Controllers
 
             ViewBag.Error = "Invalid login.";
             return View(model);
-
         }
 
         [HttpPost]

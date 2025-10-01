@@ -1,0 +1,35 @@
+﻿@model SimpleMovieSalaryWebApp.Models.CastMemberViewModel
+
+@{
+    ViewData["Title"] = "Create Cast Member";
+    var role = ViewBag.Role as string ?? "";
+}
+
+<h2>Create New Cast Member</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Remuneration" class="form-label"></label>
+        <input asp-for="Remuneration" class="form-control" type="number" />
+        <span asp-validation-for="Remuneration" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="AmountPaid" class="form-label"></label>
+        <input asp-for="AmountPaid" class="form-control" type="number" />
+        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

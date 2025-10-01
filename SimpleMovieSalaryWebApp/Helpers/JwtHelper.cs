@@ -10,7 +10,7 @@ namespace SimpleMovieSalaryWebApp.Helpers
             var jwtToken = handler.ReadJwtToken(token);
 
             // Adjust the claim type depending on your backend token
-            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "Role");
+            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
 
             return roleClaim?.Value;
         }
