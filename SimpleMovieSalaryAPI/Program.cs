@@ -9,6 +9,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS policy here
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5001")  // <-- Your Web App URL here
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,7 +53,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger config remains same
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -74,7 +87,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Use the CORS middleware here before authentication and authorization
+app.UseCors("AllowWebApp");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -85,6 +100,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.UseAuthentication();   // <--- Don't forget authentication middleware
 app.UseAuthorization();
 
 app.MapControllers();

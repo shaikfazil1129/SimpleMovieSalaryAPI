@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using SimpleMovieSalaryAPI.Data;
 using SimpleMovieSalaryAPI.Interfaces;
 using SimpleMovieSalaryAPI.Models;
@@ -122,4 +123,15 @@ public class CastMembersController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> ExportToExcel()
+    {
+        var fileContents = await _castService.ExportToExcelAsync();
+
+        return File(fileContents,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "CastMembers.xlsx");
+    }
+
 }

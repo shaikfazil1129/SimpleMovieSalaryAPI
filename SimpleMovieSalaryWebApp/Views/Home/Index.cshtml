@@ -33,14 +33,21 @@
     @* Update: Admin, Owner *@
     @if (role == "Admin" || role == "Owner")
     {
-        <button class="btn btn-warning">Update</button>
+        // <button class="btn btn-warning">Update</button>
+        <button id="updateButton" class="btn btn-warning" disabled>Update</button>
     }
 
     @* Delete: Owner Only *@
     @if (role == "Owner")
     {
-        <button class="btn btn-danger">Delete</button>
+        <button id="deleteButton" class="btn btn-danger" disabled>Delete</button>
     }
+
+    @if (role == "Admin" || role == "Owner" || role == "User")
+    {
+        <button id="exportButton" class="btn btn-info">Export to Excel</button>
+    }
+
 </div>
 
 
@@ -61,6 +68,9 @@
             @foreach (var cast in Model)
             {
                 <tr>
+                    <td>
+                        <input type="checkbox" name="selectedCast" value="@cast.Id" class="row-checkbox" />
+                    </td>
                     <td>@cast.Id</td>
                     <td>@cast.Name</td>
                     <td>@cast.Remuneration</td>
@@ -76,3 +86,87 @@ else
 {
     <p>No data to show. Click one of the fetch buttons above.</p>
 }
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Checkbox logic for update/delete buttons
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const updateBtn = document.getElementById('updateButton');
+            const deleteBtn = document.getElementById('deleteButton');
+
+            function updateButtonStates() {
+                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                updateBtn && (updateBtn.disabled = checked.length !== 1);
+                deleteBtn && (deleteBtn.disabled = checked.length === 0);
+            }
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateButtonStates);
+            });
+
+            updateBtn?.addEventListener('click', function () {
+                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                if (checked.length === 1) {
+                    const id = checked[0].value;
+                    const url = '@Url.Action("Update", "Home")' + '?id=' + id;
+                    window.location.href = url;
+                }
+            });
+
+            deleteBtn?.addEventListener('click', async function () {
+                const confirmed = confirm("Are you sure you want to delete the selected item(s)?");
+                if (!confirmed) return;
+
+                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                const ids = checked.map(cb => cb.value);
+
+                for (let id of ids) {
+                    await fetch(`@Url.Action("Delete", "Home")/${id}`, {
+                        method: 'POST'
+                    });
+                }
+
+                window.location.reload();
+            });
+
+            updateButtonStates(); // initialize state
+
+            // Excel export button logic
+            const exportBtn = document.getElementById('exportButton');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function () {
+                    const token = getCookie("token"); // function to get token from cookies
+
+                    fetch('http://localhost:5096/api/castmembers/export', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok.');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'CastMembers.xlsx';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(err => alert('Error downloading Excel: ' + err));
+                });
+            }
+
+            function getCookie(name) {
+                const value = "; " + document.cookie;
+                const parts = value.split("; " + name + "=");
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
+        });
+    </script>
+}
+

@@ -166,6 +166,74 @@ namespace SimpleMovieSalaryWebApp.Controllers
             }
         }
 
+        [AuthGuard]
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var token = Request.Cookies["token"];
+            SetRoleInViewBag();
+
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync($"http://localhost:5096/api/castmembers/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Could not find the item or error, redirect back to Index or show error
+                return RedirectToAction("Index");
+            }
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var model = JsonSerializer.Deserialize<CastMemberViewModel>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return View(model);
+        }
+
+        [AuthGuard]
+        [HttpPost]
+        public async Task<IActionResult> Update(CastMemberViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                SetRoleInViewBag();
+                return View(model);
+            }
+
+            var token = Request.Cookies["token"];
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var jsonContent = new StringContent(JsonSerializer.Serialize(model), System.Text.Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"http://localhost:5096/api/castmembers/{model.Id}", jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error updating cast member.");
+                SetRoleInViewBag();
+                return View(model);
+            }
+        }
+
+        [AuthGuard]
+        [HttpPost("Home/Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var token = Request.Cookies["token"];
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.DeleteAsync($"http://localhost:5096/api/castmembers/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Log or handle individual deletion failure if needed
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
 
         private void SetRoleInViewBag()
         {
