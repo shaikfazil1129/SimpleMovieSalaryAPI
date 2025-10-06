@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleMovieSalaryWebApp.Models;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace SimpleMovieSalaryWebApp.Controllers
 {

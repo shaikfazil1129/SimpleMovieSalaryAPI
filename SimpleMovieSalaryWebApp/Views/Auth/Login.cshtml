@@ -1,32 +1,4 @@
-﻿@* @model SimpleMovieSalaryWebApp.Models.LoginViewModel
-
-@{
-    ViewData["Title"] = "Login";
-}
-
-<h2>Login</h2>
-
-<form method="post" asp-action="Login" asp-controller="Auth">
-    <div>
-        <label>Username:</label>
-        <input type="text" asp-for="Username" />
-    </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" asp-for="Password" />
-    </div>
-    <div>
-        <button type="submit">Login</button>
-    </div>
-</form>
-
-@if (ViewBag.Error != null)
-{
-    <p style="color:red">@ViewBag.Error</p>
-} *@
-
-
-@model SimpleMovieSalaryWebApp.Models.LoginViewModel
+﻿@model SimpleMovieSalaryWebApp.Models.LoginViewModel
 
 @{
     ViewData["Title"] = "Login";
